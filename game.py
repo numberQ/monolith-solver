@@ -7,8 +7,8 @@ from monomino import MinoType
 
 class Game:
 
-    def __init__(self, board, stdscr):
-        self.board = Board(board)
+    def __init__(self, plain_board, stdscr):
+        self.board = Board(plain_board)
         self.stdscr = stdscr
         self.boardwindow = None
         self.msgwindow = None
@@ -29,7 +29,8 @@ class Game:
         self.errwindow = curses.newwin(10, 111, self.board.height + 12, 0)
 
         self.board.move(0, 0)
-        draw_utils.update_message("Use arrow keys to select polynimo. Press ENTER to select.", self.msgwindow)
+        draw_utils.update_message("Use arrow keys to select polynimo. Press ENTER to select.\n"
+                                  "'u' to undo and 'r' to redo.", self.msgwindow)
 
         self.game_loop()
 
@@ -37,10 +38,6 @@ class Game:
 
         game_over = False
         while not game_over:
-
-            draw_utils.update_message(
-                "History length: " + str(len(self.history)) + " | History idx: " + str(self.history_idx),
-                self.msgwindow)
 
             draw_utils.update_board(self.board, self.boardwindow)
 
@@ -81,16 +78,21 @@ class Game:
             draw_utils.update_message("Cannot undo before initial board state!", self.errwindow)
             return
         self.history_idx -= 1
-        self.board = deepcopy(self.history[self.history_idx])
-        self.board.move(0, 0)
+        self.reset_history()
 
     def redo_history(self):
         if self.history_idx == len(self.history) - 1:
             draw_utils.update_message("Cannot redo past most recent board state!", self.errwindow)
             return
         self.history_idx += 1
+        self.reset_history()
+
+    def reset_history(self):
+        user_row = self.board.user_row
+        user_col = self.board.user_col
         self.board = deepcopy(self.history[self.history_idx])
-        self.board.move(0, 0)
+        self.board.user_row = user_row
+        self.board.user_col = user_col
 
     def add_history(self):
         if self.history_idx < len(self.history) - 1:
