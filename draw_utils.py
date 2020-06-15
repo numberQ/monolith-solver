@@ -3,7 +3,7 @@ import curses
 COLOR_GREY = 100
 
 
-def update_board(board, scr):
+def update_board(scr, board):
     for row in range(board.height):
         for col in range(board.width):
             monomino = board.get_monomino(row, col)
@@ -16,6 +16,8 @@ def update_board(board, scr):
             scr.addstr(row + 1, col + 1, str(mino_type), color_pair)
 
 
-def update_message(message, scr):
+def update_message(scr, *messages):
     scr.clear()
-    scr.addstr(1, 1, str(message))
+    for i in range(len(messages)):
+        message = messages[i]
+        scr.addstr(i + 1, 1, str(message))

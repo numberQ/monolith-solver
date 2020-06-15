@@ -29,7 +29,7 @@ class Board:
 
         [monomino.unselect() for monomino in self.selected_polymino]
 
-        self.find_polymino(new_row, new_col)
+        self.selected_polymino = self.find_polymino(new_row, new_col)
 
         [monomino.select() for monomino in self.selected_polymino]
 
@@ -55,13 +55,12 @@ class Board:
         selected_mino_type = selected_monomino.mino_type
 
         if selected_mino_type == MinoType.EMPTY:
-            self.selected_polymino = []
-            return
+            return []
 
         polymino = [selected_monomino]
         self.polymino_flood_fill(row, col, polymino, selected_mino_type)
 
-        self.selected_polymino = polymino
+        return polymino
 
     def polymino_flood_fill(self, row, col, polymino, mino_type):
         self.polymino_flood_fill_task(row - 1, col, polymino, mino_type)

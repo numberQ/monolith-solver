@@ -3,6 +3,7 @@ from copy import deepcopy
 import curses
 import draw_utils
 from monomino import MinoType
+from ai import AI
 
 
 class Game:
@@ -29,17 +30,22 @@ class Game:
         self.errwindow = curses.newwin(10, 111, self.board.height + 12, 0)
 
         self.board.move(0, 0)
-        draw_utils.update_message("Use arrow keys to select polymino. Press ENTER to select.\n"
-                                  "'u' to undo and 'r' to redo.", self.msgwindow)
+        draw_utils.update_message(self.msgwindow,
+                                  "Use arrow keys to select polymino. Press ENTER to select.",
+                                  "Or press SPACE to let the AI take over.",
+                                  "'u' to undo and 'r' to redo.",
+                                  "Press 'q' at any time to quit.")
 
         self.game_loop()
 
     def game_loop(self):
 
+        key = None
         game_over = False
-        while not game_over:
 
-            draw_utils.update_board(self.board, self.boardwindow)
+        while not game_over or key != ord('q'):
+
+            draw_utils.update_board(self.boardwindow, self.board)
 
             self.stdscr.refresh()
             self.boardwindow.refresh()
@@ -49,6 +55,9 @@ class Game:
             key = self.stdscr.getch()
 
             self.errwindow.clear()
+
+            if key == ord('q'):
+                game_over = True
 
             if key == curses.KEY_UP:
                 self.board.move(0, -1)
@@ -66,23 +75,39 @@ class Game:
 
             if key == curses.KEY_ENTER or key == 10 or key == 13:
                 if len(self.board.selected_polymino) == 0:
-                    draw_utils.update_message("Cannot select an empty cell!", self.errwindow)
+                    draw_utils.update_message(self.errwindow, "Cannot select an empty cell!")
                 elif len(self.board.selected_polymino) == 1:
-                    draw_utils.update_message("Cannot select a 1-cell polymino!", self.errwindow)
+                    draw_utils.update_message(self.errwindow, "Cannot select a 1-cell polymino!")
                 else:
                     self.board.execute_selection()
                     self.add_history()
 
+            # Let the AI take over
+            if key == ord(' '):
+                draw_utils.update_message(self.errwindow, "AI taking over")
+                random_ai = AI()
+                random_ai.pick_monomino(self.board)
+                if len(self.board.selected_polymino) == 0:
+                    draw_utils.update_message(self.errwindow, "Cannot select an empty cell!")
+                elif len(self.board.selected_polymino) == 1:
+                    draw_utils.update_message(self.errwindow, "Cannot select a 1-cell polymino!")
+                else:
+                    self.board.execute_selection()
+                    self.add_history()
+
+            if self.board.is_board_done():
+                draw_utils.update_message(self.errwindow, "No valid moves remain. You must either undo or quit.")
+
     def undo_history(self):
         if self.history_idx == 0:
-            draw_utils.update_message("Cannot undo before initial board state!", self.errwindow)
+            draw_utils.update_message(self.errwindow, "Cannot undo before initial board state!")
             return
         self.history_idx -= 1
         self.set_history()
 
     def redo_history(self):
         if self.history_idx == len(self.history) - 1:
-            draw_utils.update_message("Cannot redo past most recent board state!", self.errwindow)
+            draw_utils.update_message(self.errwindow, "Cannot redo past most recent board state!")
             return
         self.history_idx += 1
         self.set_history()
