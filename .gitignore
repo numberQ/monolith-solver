@@ -1,2 +1,9 @@
+# Pycharm junk
 .idea/
+
+# Python junk
 env/
+__pycache__/
+
+# No need to commit the layout
+layout.csv
