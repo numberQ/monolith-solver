@@ -4,8 +4,6 @@ import random
 class AI:
     def pick_monomino(self, board):
 
-        # TODO fix infinite loop when there are no more valid moves
-
         if board.is_board_done():
             return
 
