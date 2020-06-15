@@ -29,7 +29,7 @@ class Game:
         self.errwindow = curses.newwin(10, 111, self.board.height + 12, 0)
 
         self.board.move(0, 0)
-        draw_utils.update_message("Use arrow keys to select polynimo. Press ENTER to select.\n"
+        draw_utils.update_message("Use arrow keys to select polymino. Press ENTER to select.\n"
                                   "'u' to undo and 'r' to redo.", self.msgwindow)
 
         self.game_loop()
