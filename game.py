@@ -78,16 +78,16 @@ class Game:
             draw_utils.update_message("Cannot undo before initial board state!", self.errwindow)
             return
         self.history_idx -= 1
-        self.reset_history()
+        self.set_history()
 
     def redo_history(self):
         if self.history_idx == len(self.history) - 1:
             draw_utils.update_message("Cannot redo past most recent board state!", self.errwindow)
             return
         self.history_idx += 1
-        self.reset_history()
+        self.set_history()
 
-    def reset_history(self):
+    def set_history(self):
         user_row = self.board.user_row
         user_col = self.board.user_col
         self.board = deepcopy(self.history[self.history_idx])
