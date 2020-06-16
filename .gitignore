@@ -6,4 +6,4 @@ env/
 __pycache__/
 
 # No need to commit the layout
-layout.csv
+*.csv

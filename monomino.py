@@ -17,6 +17,9 @@ class Monomino:
         self.mino_type = MinoType(int(num))
         self.selected = False
 
+    def is_empty(self):
+        return self.mino_type == MinoType.EMPTY
+
     def select(self):
         self.selected = True
 

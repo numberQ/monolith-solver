@@ -1,4 +1,4 @@
-from monomino import Monomino, MinoType
+from monomino import Monomino
 
 
 class Board:
@@ -54,7 +54,7 @@ class Board:
         selected_monomino = self.get_monomino(row, col)
         selected_mino_type = selected_monomino.mino_type
 
-        if selected_mino_type == MinoType.EMPTY:
+        if selected_monomino.is_empty():
             return []
 
         polymino = [selected_monomino]
@@ -137,3 +137,7 @@ class Board:
                     return False
 
         return True
+
+    def get_score(self):
+        flat_board = [monomino for row in self.board for monomino in row]
+        return sum(1 for monomino in flat_board if monomino.is_empty())

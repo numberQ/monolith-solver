@@ -15,8 +15,8 @@ def main(stdscr):
         plain_board = list(csv.reader(open(filepath)))
     # If not, let's just use a default
     else:
-        height = 10
-        width = 20
+        height = 11
+        width = 22
         plain_board = random_board(height, width)
 
     game = Game(plain_board, stdscr)
