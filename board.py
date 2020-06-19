@@ -1,4 +1,5 @@
 from monomino import Monomino
+import csv
 
 
 class Board:
@@ -141,3 +142,10 @@ class Board:
     def get_score(self):
         flat_board = [monomino for row in self.board for monomino in row]
         return sum(1 for monomino in flat_board if monomino.is_empty())
+
+    def write_to_file(self, filename):
+        with open(filename, mode='w') as csvfile:
+            writer = csv.writer(csvfile, delimiter=',')
+            for row in self.board:
+                row_types = [monomino.mino_type.value for monomino in row]
+                writer.writerow(row_types)

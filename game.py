@@ -27,10 +27,10 @@ class Game:
         curses.init_pair(MinoType.BLUE.value, curses.COLOR_BLACK, curses.COLOR_BLUE)
 
         self.boardwindow = curses.newwin(self.board.height + 2, self.board.width + 2, 0, 0)
-        self.msgwindow = curses.newwin(10, 100, self.board.height + 2, 0)
-        self.errwindow = curses.newwin(10, 111, self.board.height + 12, 0)
+        self.msgwindow = curses.newwin(8, 100, self.board.height + 2, 0)
+        self.errwindow = curses.newwin(10, 200, self.board.height + 10, 0)
 
-        self.ai = AI(self.boardwindow, self.msgwindow)
+        self.ai = AI(self.boardwindow, self.errwindow)
 
         self.board.move(0, 0)
 
@@ -77,6 +77,11 @@ class Game:
             if key == ord('r'):
                 self.redo_history()
 
+            if key == ord('p'):
+                filename = "new_layout.csv"
+                self.board.write_to_file(filename)
+                draw_utils.update_message(self.msgwindow, "Current board state written to '" + filename + "'")
+
             if key == curses.KEY_ENTER or key == 10 or key == 13:
                 if len(self.board.selected_polymino) == 0:
                     draw_utils.update_message(self.errwindow, "Cannot select an empty cell!")
@@ -88,22 +93,18 @@ class Game:
 
             # Let the AI take over
             if key == ord(' '):
-                monomino = self.ai.pick_monomino(self.board)
-                draw_utils.update_message(self.errwindow, "(" + str(monomino.row) + "," + str(monomino.col) + ")")
-                if monomino is None:
+                draw_utils.update_message(self.errwindow, "AI is thinking...")
+                self.errwindow.refresh()
+                root_node = self.ai.pick_monomino(self.board)
+                draw_utils.update_message(self.msgwindow, str(root_node))
+                if root_node is None:
                     draw_utils.update_message(self.errwindow, "Could not find a move.")
                 else:
+                    coords = root_node.coords
                     self.board.get_monomino(self.board.user_row, self.board.user_col).unselect()
-                    self.board.user_row = monomino.row
-                    self.board.user_col = monomino.col
+                    self.board.user_row = coords[0]
+                    self.board.user_col = coords[1]
                     self.board.move(0, 0)
-                # if len(self.board.selected_polymino) == 0:
-                #     draw_utils.update_message(self.errwindow, "Cannot select an empty cell!")
-                # elif len(self.board.selected_polymino) == 1:
-                #     draw_utils.update_message(self.errwindow, "Cannot select a 1-cell polymino!")
-                # else:
-                #     self.board.execute_selection()
-                #     self.add_history()
 
             if self.board.is_board_done():
                 draw_utils.update_message(self.errwindow, "No valid moves remain. You must either undo or quit.")
