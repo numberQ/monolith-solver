@@ -4,6 +4,7 @@
 # Python junk
 env/
 __pycache__/
+*.pyc
 
 # No need to commit the layout
 *.csv
