@@ -80,7 +80,7 @@ class Game:
             if key == ord('p'):
                 filename = "new_layout.csv"
                 self.board.write_to_file(filename)
-                draw_utils.update_message(self.msgwindow, "Current board state written to '" + filename + "'")
+                draw_utils.update_message(self.errwindow, "Current board state written to '" + filename + "'")
 
             if key == curses.KEY_ENTER or key == 10 or key == 13:
                 if len(self.board.selected_polymino) == 0:
